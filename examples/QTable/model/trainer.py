@@ -15,7 +15,7 @@ from constants import LEARNING_RATE, DISCOUNT, EPISODES
 from constants import FIELD_RESOLUTION
 from constants import EPSILON_START, EPSILON_DECAY_START, EPSILON_DECAY_AMT, EPSILON_DECAY_END
 from constants import ATTACK_ACTIONS, RETREAT_ACTIONS, ACTION_SPACE_SIZE
-from constants import REWARD_GRAB, REWARD_CAPTURE, REWARD_FAILURE, REWARD_STEP
+from constants import REWARD_GRAB, REWARD_CAPTURE, REWARD_FAILURE, REWARD_OFF_FIELD, REWARD_STEP
 from constants import SAVE_DIR, SAVE_EVERY
 from model import QLearn
 
@@ -135,7 +135,6 @@ def train(args, config):
       '''
       Part 1: Translate MOOS state to model's state representation
       '''
-      #print(msg.state['HAS_FLAG'])
       model_state = q.get_state(
         msg.state['NAV_X'],
         msg.state['NAV_Y'],
@@ -143,6 +142,11 @@ def train(args, config):
         msg.state['NODE_REPORTS'][agent_data.enemy]['NAV_Y'],
         msg.state['HAS_FLAG']
       )
+
+      #future initial enemy position tracker groundwork
+      #if agent_data.first:
+      #  agent_data.initial_enemy_pos = ((msg.state['NODE_REPORTS'][agent_data.enemy]['NAV_X'], msg.state['NODE_REPORTS'][agent_data.enemy]['NAV_Y']))
+      #  agent_data.first = False
 
       # Detect discrete state transitions
       if model_state != agent_data.last_state:
@@ -158,6 +162,8 @@ def train(args, config):
         elif msg.episode_report['NUM'] != agent_data.last_episode_num:
           # Calculate reward based on pEpisodeManager's report
           reward = config['reward_failure']
+          if not msg.state['ONFIELD']:
+            reward += config['reward_off_field']
           if msg.episode_report['SUCCESS']:
             reward = config['reward_capture']
 
@@ -297,6 +303,7 @@ if __name__ == '__main__':
     'reward_grab': REWARD_GRAB,
     'reward_capture': REWARD_CAPTURE,
     'reward_failure': REWARD_FAILURE,
+    'reward_off_field': REWARD_OFF_FIELD,
     'reward_step': REWARD_STEP,
   }
 
