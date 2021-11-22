@@ -162,8 +162,8 @@ def train(args, config):
         elif msg.episode_report['NUM'] != agent_data.last_episode_num:
           # Calculate reward based on pEpisodeManager's report
           reward = config['reward_failure']
-          if not msg.state['ONFIELD']:
-            reward += config['reward_off_field']
+          #if not msg.state['ONFIELD']:
+          #  reward += config['reward_off_field']
           if msg.episode_report['SUCCESS']:
             reward = config['reward_capture']
 
@@ -303,7 +303,7 @@ if __name__ == '__main__':
     'reward_grab': REWARD_GRAB,
     'reward_capture': REWARD_CAPTURE,
     'reward_failure': REWARD_FAILURE,
-    'reward_off_field': REWARD_OFF_FIELD,
+    #'reward_off_field': REWARD_OFF_FIELD,
     'reward_step': REWARD_STEP,
   }
 
