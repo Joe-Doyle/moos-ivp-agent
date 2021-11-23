@@ -44,6 +44,7 @@ def run(args):
         msg.state['NAV_Y'],
         msg.state['NODE_REPORTS'][args.enemy]['NAV_X'],
         msg.state['NODE_REPORTS'][args.enemy]['NAV_Y'],
+        msg.state['NODE_REPORTS'][args.enemy]['NAV_HEADING'],
         msg.state['HAS_FLAG']
       )
 

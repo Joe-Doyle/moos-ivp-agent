@@ -124,6 +124,7 @@ def test(args):
                 msg.state['NAV_Y'],
                 msg.state['NODE_REPORTS'][agent.enemy]['NAV_X'],
                 msg.state['NODE_REPORTS'][agent.enemy]['NAV_Y'],
+                msg.state['NODE_REPORTS'][agent.enemy]['NAV_HEADING'],
                 msg.state['HAS_FLAG']
             )
 

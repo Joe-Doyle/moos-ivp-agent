@@ -141,6 +141,7 @@ def train(args, config):
         msg.state['NAV_Y'],
         msg.state['NODE_REPORTS'][agent_data.enemy]['NAV_X'],
         msg.state['NODE_REPORTS'][agent_data.enemy]['NAV_Y'],
+        msg.state['NODE_REPORTS'][agent_data.enemy]['NAV_HEADING'],
         msg.state['HAS_FLAG']
       )
 
