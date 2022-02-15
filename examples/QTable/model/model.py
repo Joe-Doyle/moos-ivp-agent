@@ -1,6 +1,7 @@
 import os
 import time
 import json 
+import math
 import numpy as np
 
 from mivp_agent.aquaticus.field import FieldDiscretizer
@@ -92,6 +93,13 @@ class QLearn:
 
     # Update the qtable
     updated_q = (1 - self._lr) * existing_q + self._lr * (reward + self._gamma * expected_future_q)
+    #temporal difference confirmation test
+    td_target = reward + self._gamma * expected_future_q
+    td_delta = td_target - existing_q
+    td_test_updated_q = existing_q + self._lr * td_delta
+    #combined for conciseness, happens to perfectly match wikipedia
+    #td_test_updated_q = existing_q + self._lr * (reward + self._gamma * expected_future_q - existing_q)
+    assert math.isclose(updated_q, td_test_updated_q, rel_tol=1e-10)
     self._qtable[state + (action,)] = updated_q
   
   # Used at the goal state, as there is no future state b/c robot get's reset
