@@ -17,7 +17,7 @@ class AgentData:
     self.current_action = None
 
     '''
-    To identify new states and preform action lookup / calculation from the model.
+    To identify new states and perform action lookup / calculation from the model.
     '''
     self.last_rpr = None
 
@@ -47,13 +47,20 @@ class EpisodicManager:
     SETUP EPISODE TRACKING
     '''
     self.episodes = episodes
-    self.current_episode = 0
+    self.completed_episode = 0
+
+  def _build_report(self):
+    report = {
+      'completed_episodes': self.completed_episode,
+    }
+
+    return report
 
   def start(self, task, log=True):
     with MissionManager(task, log=log) as mgr:
       mgr.wait_for(self.wait_for)
 
-      while self.current_episode < self.episodes:
+      while self.completed_episode < self.episodes:
         msg = mgr.get_message()
 
         # Find agent in list...
@@ -67,16 +74,20 @@ class EpisodicManager:
 
             if data.last_rpr != rpr:
               msg.mark_transition()
+              em_report = self._build_report()
               # still need state here bc rpr_to_act expects obs
-              data.current_action = a.rpr_to_act(rpr, msg.state)
+              data.current_action = a.rpr_to_act(rpr, msg.state, em_report)
 
             # Update episode count if applicable
             if data.last_episode != msg.episode_report['NUM']:
+              if data.last_episode is not None:
+                # update the global episode count # if not first
+                self.completed_episode += 1
               data.last_episode = msg.episode_report['NUM']
+              em_report = self._build_report()
+              em_report['success'] = msg.episode_report['SUCCESS']
+              a.episode_end(rpr, msg.state, em_report)
 
-              ################################################
-              # Importantly, update the global episode count #
-              self.current_episode += 1
 
             # track data
             data.last_rpr = rpr
